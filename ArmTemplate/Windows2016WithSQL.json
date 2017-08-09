@@ -1,0 +1,86 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "newVMName": {
+      "type": "string",
+      "defaultValue": "testMachine"
+    },
+    "labName": {
+      "type": "string",
+      "defaultValue": "DevTestLabName"
+    },
+    "size": {
+      "type": "string",
+      "defaultValue": "Standard_D4s_v3"
+    },
+    "userName": {
+      "type": "string",
+      "defaultValue": "ImAdmin"
+    },
+    "expirationDate": {
+      "type": "string",
+      "defaultValue": "2017-08-07T07:00:00.000Z"
+    },
+    "password": {
+      "type": "securestring",
+      "defaultValue": "YouNeedPassword"
+    }
+  },
+  "variables": {
+    "labSubnetName": "[concat(variables('labVirtualNetworkName'), 'Subnet')]",
+    "labVirtualNetworkId": "[resourceId('Microsoft.DevTestLab/labs/virtualnetworks', parameters('labName'), variables('labVirtualNetworkName'))]",
+    "labVirtualNetworkName": "[concat('Dtl', parameters('labName'))]",
+    "vmId": "[resourceId ('Microsoft.DevTestLab/labs/virtualmachines', parameters('labName'), parameters('newVMName'))]",
+    "vmName": "[concat(parameters('labName'), '/', parameters('newVMName'))]",
+    "hostDns": "[concat('*.',resourceGroup().location,'.cloudapp.azure.com')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-04-26-preview",
+      "type": "Microsoft.DevTestLab/labs/virtualmachines",
+      "name": "[variables('vmName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "labVirtualNetworkId": "[variables('labVirtualNetworkId')]",
+        "notes": "Windows Server 2016 Datacenter",
+        "galleryImageReference": {
+          "offer": "WindowsServer",
+          "publisher": "MicrosoftWindowsServer",
+          "sku": "2016-Datacenter",
+          "osType": "Windows",
+          "version": "latest"
+        },
+        "size": "[parameters('size')]",
+        "userName": "[parameters('userName')]",
+        "password": "[parameters('password')]",
+        "isAuthenticationWithSshKey": false,
+        "artifacts": [
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'privaterepo839', 'windows-install-sql')]"
+          },
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'privaterepo839', 'windows-install-winrm')]",
+            "parameters": [
+              {
+                "name": "hostDns",
+                "value": "[variables('hostDns')]"
+              }
+            ]
+          }
+        ],
+        "labSubnetName": "[variables('labSubnetName')]",
+        "disallowPublicIpAddress": false,
+        "storageType": "Premium",
+        "allowClaim": false,
+        "expirationDate": "[parameters('expirationDate')]"
+      }
+    }
+  ],
+  "outputs": {
+    "labVMId": {
+      "type": "string",
+      "value": "[variables('vmId')]"
+    }
+  }
+}
