@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/schemas/2016-11-28/dtlArtifacts.json",
+  "title": "Install WinRM",
+  "description": "Install WinRM for test execution",
+  "publisher": "Microsoft",
+  "iconUri": "https://www.visualstudio.com/favicon.ico",
+  "targetOsType": "Windows",
+  "parameters": {
+    "hostDns": {
+      "type": "string",
+      "displayName": "HostDns",
+      "description": "Host Dns for example *.westus2.cloudapp.azure.com"
+    }
+  },
+  "runCommand": {
+    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy bypass \"& ./ConfigureWinRM.ps1 -HostName ', parameters('hostDns'))]"
+  }
+}

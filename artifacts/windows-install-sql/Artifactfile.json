@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/schemas/2016-11-28/dtlArtifacts.json",
+  "title": "Install SQL Server 2016 Dev",
+  "description": "Install SQL Server 2016",
+  "publisher": "Microsoft",
+  "iconUri": "https://www.visualstudio.com/favicon.ico",
+  "targetOsType": "Windows",
+  "runCommand": {
+    "commandToExecute": "powershell.exe -ExecutionPolicy bypass -File InstallSQLServer2016Dev.ps1"
+  }
+}
